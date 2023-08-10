@@ -56,6 +56,7 @@ body {
 	border-radius: 0.9rem;
 	overflow-y: auto;
 	position: relative;
+	padding: 2rem;
 }
 
 .loader {
@@ -257,6 +258,7 @@ body {
 
 .details img {
 	width: 33%;
+	/* object-fit: contain; */
 }
 
 .details-overview {
@@ -321,12 +323,12 @@ body {
 	position: absolute;
 	top: 0.6rem;
 	left: 0.6rem;
-	height: 3.2rem;
+	/* height: 3.2rem; */
 	aspect-ratio: 1;
-	border-radius: 50%;
+	/* border-radius: 50%; */
 	border: none;
 	/* background-color: var(--color-text); */
-	background-color: #fff;
+	/* background-color: #fff; */
 	color: var(--color-background-500);
 	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
 	font-family: sans-serif;
@@ -337,6 +339,14 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+.grid-loader {
+	width: fit-content;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 
 /*

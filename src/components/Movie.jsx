@@ -1,12 +1,18 @@
-function Movie({ movie }) {
+import { images } from '../constants';
+
+function Movie({ movie, onSelectMovie }) {
+	const { Poster: poster, Title: title, Year: year, imdbID: id } = movie;
 	return (
-		<li>
-			<img src={movie.Poster} alt={`${movie.Title} poster`} />
-			<h3>{movie.Title}</h3>
+		<li onClick={() => onSelectMovie(id)}>
+			<img
+				src={poster === 'N/A' ? images.noImg : poster}
+				alt={`${title} poster`}
+			/>
+			<h3>{title}</h3>
 			<div>
 				<p>
 					<span>🗓</span>
-					<span>{movie.Year}</span>
+					<span>{year}</span>
 				</p>
 			</div>
 		</li>
