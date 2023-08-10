@@ -27,14 +27,20 @@ export default function App() {
 	const [query, setQuery] = useState('');
 	const [selectedId, setSelectedId] = useState(null);
 
-	console.log(movies);
-
 	function handleSelectMovie(id) {
 		setSelectedId((selectedId) => (id === selectedId ? null : id));
 	}
 
 	function handleCloseMovie() {
 		setSelectedId(null);
+	}
+
+	function handleAddWatched(movie) {
+		setWatched((watched) => [...watched, movie]);
+	}
+
+	function handleDeleteWatched(id) {
+		setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
 	}
 
 	useEffect(() => {
@@ -47,7 +53,7 @@ export default function App() {
 				);
 
 				if (!res.ok) {
-					throw new Error('Something went wrong with fetching movies!');
+					throw new Error('Something went wrong with fetching query!');
 				}
 
 				const data = await res.json();
@@ -93,11 +99,16 @@ export default function App() {
 						<MovieDetails
 							selectedId={selectedId}
 							onCloseMovie={handleCloseMovie}
+							onAddWatched={handleAddWatched}
+							watched={watched}
 						/>
 					) : (
 						<>
 							<WatchedSummary watched={watched} />
-							<WatchedMoviesList watched={watched} />
+							<WatchedMoviesList
+								watched={watched}
+								onDeleteWatched={handleDeleteWatched}
+							/>
 						</>
 					)}
 				</Box>

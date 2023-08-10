@@ -1,4 +1,4 @@
-import GridLoader from 'react-spinners/GridLoader';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 const override = {
 	display: 'block',
@@ -7,11 +7,11 @@ const override = {
 function Loader(loadingState) {
 	return (
 		<div className='grid-loader'>
-			<GridLoader
+			<ClipLoader
 				color='var(--color-primary)'
 				loading={loadingState}
 				cssOverride={override}
-				size={20}
+				size={60}
 				aria-label='Loading Spinner'
 				data-testid='loader'
 			/>
