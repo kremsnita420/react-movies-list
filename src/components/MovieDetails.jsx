@@ -49,6 +49,7 @@ export default function MovieDetails({
 		onAddWatched(newWatchedMovie);
 		onCloseMovie();
 	}
+
 	useEffect(
 		function () {
 			async function getMovieDetails() {
@@ -77,6 +78,35 @@ export default function MovieDetails({
 		},
 		[selectedId]
 	);
+
+	useEffect(
+		function () {
+			if (!title) return;
+			document.title = `Movie | ${title}`;
+
+			return function () {
+				document.title = 'UsePopcorn';
+			};
+		},
+		[title]
+	);
+
+	useEffect(
+		function () {
+			function callback(e) {
+				if (e.code === 'Escape') {
+					onCloseMovie();
+				}
+			}
+			document.addEventListener('keydown', callback);
+
+			// Cleanup function
+			return function () {
+				document.removeEventListener('keydown', callback);
+			};
+		},
+		[onCloseMovie]
+	);
 	return (
 		<div className='details'>
 			{isLoading && <Loader loadingState={isLoading} />}
@@ -84,7 +114,10 @@ export default function MovieDetails({
 			{!isLoading && !error && (
 				<>
 					<header>
-						<button className='btn-back' onClick={() => onCloseMovie()}>
+						<button
+							title='Click of press escape button for close.'
+							className='btn-back'
+							onClick={() => onCloseMovie()}>
 							⬅️
 						</button>
 						<img

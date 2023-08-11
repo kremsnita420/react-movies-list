@@ -42,41 +42,58 @@ export default function App() {
 	function handleDeleteWatched(id) {
 		setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
 	}
+	useEffect(
+		function () {
+			/* Cancel an ongoing fetch request. It
+			allows us to cancel the request if needed, for example, if the component is unmounted or if the
+			dependency array of the `useEffect` hook changes. */
+			const controller = new AbortController();
 
-	useEffect(() => {
-		async function fetchMovies() {
-			setIsLoading(true);
-			setError('');
-			try {
-				const res = await fetch(
-					`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
-				);
+			async function fetchMovies() {
+				try {
+					setIsLoading(true);
+					setError('');
 
-				if (!res.ok) {
-					throw new Error('Something went wrong with fetching query!');
+					const res = await fetch(
+						`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+						{ signal: controller.signal }
+					);
+
+					if (!res.ok)
+						throw new Error('Something went wrong with fetching movies');
+
+					const data = await res.json();
+					if (data.Response === 'False') throw new Error('Movie not found');
+
+					setMovies(data.Search);
+					setError('');
+				} catch (err) {
+					if (err.name !== 'AbortError') {
+						setError(err.message);
+					}
+				} finally {
+					setIsLoading(false);
 				}
-
-				const data = await res.json();
-
-				if (data.Response === 'False') {
-					throw new Error('Movie not found!');
-				}
-
-				setMovies(data.Search);
-			} catch (err) {
-				setError(err.message);
-			} finally {
-				setIsLoading(false);
 			}
-		}
 
-		if (query.length < 3) {
-			setMovies([]);
-			setError('');
-			return;
-		}
-		fetchMovies();
-	}, [query]);
+			if (query.length < 3) {
+				setMovies([]);
+				setError('');
+				return;
+			}
+
+			handleCloseMovie();
+			fetchMovies();
+
+			/* Cleanup function. Abort the ongoing fetch request if the component is unmounted or if the
+			`query` value changes before the fetch request is completed. The `controller.abort()` method is
+			called to cancel the fetch request and prevent any further processing of the response. */
+			return function () {
+				controller.abort();
+			};
+		},
+		[query]
+	);
 
 	return (
 		<>
