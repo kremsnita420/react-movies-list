@@ -1,6 +1,16 @@
-import { useState } from 'react';
+import { useRef } from 'react';
+import { useKey } from '../hooks/useKey';
 
 function Search({ query, setQuery }) {
+	const inputEl = useRef(null);
+
+	// Use custom hook to focus search field and clear results
+	useKey('Enter', function () {
+		if (document.activeElement === inputEl.current) return;
+		inputEl.current.focus();
+		setQuery('');
+	});
+
 	return (
 		<input
 			className='search'
@@ -8,6 +18,7 @@ function Search({ query, setQuery }) {
 			placeholder='Search movies...'
 			value={query}
 			onChange={(e) => setQuery(e.target.value)}
+			ref={inputEl}
 		/>
 	);
 }

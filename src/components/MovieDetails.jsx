@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import StarRating from '../components/StarRating';
 import { images } from '../constants';
 import Loader from './Loader';
 import ErrorMessage from './ErrorMessage';
+import { useKey } from '../hooks/useKey';
 const KEY = process.env.REACT_APP_API_KEY;
 
 export default function MovieDetails({
@@ -15,6 +16,8 @@ export default function MovieDetails({
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState('');
 	const [userRating, setUserRating] = useState('');
+
+	const countRef = useRef(0);
 
 	const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
 
@@ -34,7 +37,7 @@ export default function MovieDetails({
 		Director: director,
 		Genre: genre,
 	} = movie;
-
+	console.log(movie);
 	function handleAdd() {
 		const newWatchedMovie = {
 			imdbID: selectedId,
@@ -44,12 +47,14 @@ export default function MovieDetails({
 			imdbRating: Number(imdbRating),
 			runtime: Number(runtime.split(' ').at(0)),
 			userRating,
+			countRatingDecisions: countRef.current,
 		};
 
 		onAddWatched(newWatchedMovie);
 		onCloseMovie();
 	}
 
+	// Fetch movie details from api endpoint
 	useEffect(
 		function () {
 			async function getMovieDetails() {
@@ -79,6 +84,7 @@ export default function MovieDetails({
 		[selectedId]
 	);
 
+	// Set dynamic page title
 	useEffect(
 		function () {
 			if (!title) return;
@@ -91,21 +97,15 @@ export default function MovieDetails({
 		[title]
 	);
 
+	// Close movie details section when escape is pressed
+	useKey('Escape', onCloseMovie);
+
+	// Count how many times is movie rated
 	useEffect(
 		function () {
-			function callback(e) {
-				if (e.code === 'Escape') {
-					onCloseMovie();
-				}
-			}
-			document.addEventListener('keydown', callback);
-
-			// Cleanup function
-			return function () {
-				document.removeEventListener('keydown', callback);
-			};
+			if (userRating) countRef.current = countRef.current + 1;
 		},
-		[onCloseMovie]
+		[userRating]
 	);
 	return (
 		<div className='details'>
@@ -159,6 +159,7 @@ export default function MovieDetails({
 								</p>
 							)}
 						</div>
+
 						<p>
 							<em>{plot}</em>
 						</p>
